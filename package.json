@@ -8,11 +8,15 @@
     "npm": "6.4.1"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "gulp gulpfile.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1"
   }
 }
