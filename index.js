@@ -28,6 +28,8 @@ app.post('/login', function(request, response){
     //lookup username and password here
     if(info.username == 'hello' && info.password == 'world'){
     	response.render('loggedin')
+    }else {
+    	
     }
 });
 
