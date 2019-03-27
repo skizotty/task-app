@@ -8,9 +8,10 @@
     "npm": "6.4.1"
   },
   "scripts": {
-    "watch": "npm run watch-code & npm run watch-css",
-    "watch-code": "nodemon index.js",
-    "watch-css": "node-sass -w scss -o public/css/main.css"
+    //"watch": "npm run watch-code & npm run watch-css",
+    //"watch-code": "nodemon index.js",
+    //"watch-css": "node-sass -w scss -o public/css/main.css"
+    "start":"node index.js"
   },
   "author": "",
   "license": "ISC",
