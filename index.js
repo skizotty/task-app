@@ -21,9 +21,9 @@ app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 //connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/webapp');
+//mongoose.connect('mongodb://localhost:27017/webapp');
 //production url: mongodb://admin:hzJi745JF9yEV9e@ds125486.mlab.com:25486/heroku_sn1g0n8w
-//mongoose.connect('mongodb://admin:hzJi745JF9yEV9e@ds125486.mlab.com:25486/heroku_sn1g0n8w');
+mongoose.connect('mongodb://admin:hzJi745JF9yEV9e@ds125486.mlab.com:25486/heroku_sn1g0n8w');
 
 var db = mongoose.connection;
 
