@@ -1,0 +1,6 @@
+{{!-- only output author name if an author exists --}}
+{{#if error}}
+		<div id='error'>{{error}}</div>
+{{else if docs}}
+		{{docs}}
+{{/if}}	

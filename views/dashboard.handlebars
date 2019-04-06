@@ -1,5 +1,19 @@
+{{!-- only output author name if an author exists --}}
+{{#if error}}
+		<div id='error'>{{error}}</div>
+{{else if success}}
+		<div id="success">Added!</div>
+{{/if}}	
+
 <h1>Hey! You happened to be logged in!</h1>
 
 <p>You may be wondering what now....</p>
+
+<form method="post" action="/newtask">
+	<input type="text" name="name" placeholder="Task Name">
+	<input type="date" name="dueDate" placeholder="Due Date">
+	<input type="text" name="description" placeholder="Description">
+	<input type="submit" value="New Task">
+</form>
 
 <a href="/logout">logout here</a>

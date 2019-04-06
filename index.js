@@ -6,6 +6,9 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session)
 const User = require('./models/user');
+const Task = require('./models/task');
+const reload = require('reload')
+
 
 app.use(express.static('public'))
 
@@ -16,15 +19,15 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 //setting handlebars as view engine
-var exphbs  = require('express-handlebars');
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+var handlebars  = require('express-handlebars').create({defaultLayout: 'main'})
+app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
+
 
 //connect to MongoDB
 //mongoose.connect('mongodb://localhost:27017/webapp');
 //production url: mongodb://admin:hzJi745JF9yEV9e@ds125486.mlab.com:25486/heroku_sn1g0n8w
 mongoose.connect('mongodb://admin:hzJi745JF9yEV9e@ds125486.mlab.com:25486/heroku_sn1g0n8w');
-
 var db = mongoose.connection;
 
 //handle mongo error
@@ -59,7 +62,7 @@ app.get('/',function(req,res) {
 
 app.post('/login', function(req, res, next){
     User.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
-      if (error || !user) {
+      if (error || !user) {        
         var err = 'Wrong email or password.';
         res.render('home',{error:err})
       } else {
@@ -109,6 +112,42 @@ app.post('/register',function(req,res,next) {
     });    
 })
 
+app.post('/newtask',function(req,res,next) {
+  var taskData = {
+    name: req.body.name,
+    owner:req.session.userId,
+    dueDate: (typeof req.body.dueDate == 'undefined' ? '' : req.body.dueDate),
+    description:(typeof req.body.description == 'undefined' ? '' : req.body.description)  ,
+    createdDate: new Date().toLocaleString(),
+  }
+  Task.create(taskData,function(error,task) {
+    if(error) {
+      var err = error.errmsg;
+      console.log(err)
+      res.render('dashboard',{error:err})
+    } else {
+      res.render('dashboard',{success:true})
+    }
+  })
+})
+
+app.get('/tasks',function(req,res,next) {
+  if(req.session.isValidated){
+    var finder = Task.find({ owner: req.session.userId});
+    finder.exec(function (err, docs) {
+      if(err){
+         res.render('tasks',{error:err})
+      } else {
+         res.render('tasks',{docs:docs})
+      } 
+    });    
+  } else {
+    res.render('dashboard',{error:'You need to login to see that.'})
+  }
+
+})
+
+reload(app);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
