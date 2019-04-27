@@ -1,56 +1,96 @@
-	<h1>Task Manager</h1>
-	<!-- main -->
-	<div class="main">
-  {{!-- only output author name if an author exists --}}
-  {{#if error}}
-    		<div id='error'>{{error}}</div>
-  {{/if}}		
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="signin-form profile">
-				<h3>Login</h3>
-				
-				<div class="login-form">
-					<form action="/login" method="post">
-						<input type="email" name="logemail" placeholder="E-mail" required="">
-						<input type="password" name="logpassword" placeholder="Password" required="">
-						<input type="submit" value="Login">
-					</form>
-				</div>
-			</div>
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="signin-form profile">
-				<h3>Register</h3>
-				<div class="register-form">
-					<form id="login" action="/register" method="post" onsubmit="event.preventDefault(); validateMyForm();">
-						<input type="email" name="email" placeholder="E-mail" required="">
-						<input type="text" name="username" placeholder="Username" required="">
-						<input type="password" name="password" placeholder="Password" id="password" required="" >
-						<input type="password" name="passwordConf" placeholder="Confirm Password" id="password_conf" required="">
-						<input type="submit" value="Register">
-					</form>
-				</div>
-				<p><a href="#"> By clicking register, I agree to your terms</a></p>
-			</div>
-		</div>
-		<div class="clear"></div>
-		<!--//signin-form-->	
-	</div>
-	<div class="copyright">
-		<p> &copy; Slopie Designs | Design by <a href="http://Slopie.Design/" >Slopie Designs</a></p>
-	</div>	
-
-	<script type="text/javascript">
-		var passWordField = document.getElementById('password')
-		var passWordConfirmField = document.getElementById('password_conf')
-		var form = document.getElementById('login')
-		function validateMyForm(){
-			if(passWordField.value != passWordConfirmField.value){ 
-		    	alert("Passwords do not match. Please try again.");
-		  	} else {
-		  		form.submit()
-		  	}
-		}
-	</script>	
-
-
+<div class="row">
+   <div class="medium-7 large-6 columns">
+      <h1>Close Your Eyes and Open Your Mind</h1>
+      <p class="subheader">There is beauty in space, and it is orderly. There is no weather, and there is regularity. It is predictable. Everything in space obeys the laws of physics. If you know these laws, and obey them, space will treat you kindly.</p>
+      <button class="button">Take a Tour</button>
+      <button class="button">Start a free trial</button>
+   </div>
+   <div class="show-for-large large-3 columns">
+      <img src="https://placehold.it/400x370&text=PSR1257 + 12 C" alt="picture of space">
+   </div>
+   <div id="login" class="login medium-5 large-3 columns">
+      <div class="callout secondary">
+        <form id="register-form" action="/register" method="post" onsubmit="event.preventDefault(); validateMyForm();" style="display:none;">
+            <input type="email" name="email" placeholder="E-mail" required="">
+            <input type="text" name="username" placeholder="Username" required="">
+            <input type="password" name="password" placeholder="Password" id="password" required="" >
+            <input type="password" name="passwordConf" placeholder="Confirm Password" id="password_conf" required="">
+            <button type="submit" class="button" value="Register">Register</button> Login <a href="javascript:void(0);" id="switch-to-login" onlcick="goToLoginForm()">here</a>
+        </form>
+        <form id="login-form" action="/login" method="post">
+            <input type="email" name="logemail" placeholder="E-mail" required="">
+            <input type="password" name="logpassword" placeholder="Password" required="">
+            <button type="submit" class="button" value="Login">Login</button>
+            <div class="form-text">Register <a href="javascript:void(0);" onclick="goToRegisterForm()">here</a></div>
+		</form>        
+      </div>
+   </div>
+</div>
+<div class="row column">
+   <hr>
+</div>
+<div class="row column">
+   <p class="lead">Trending Planetary Destinations</p>
+</div>
+<div class="row small-up-1 medium-up-2 large-up-3">
+   <div class="column">
+      <div class="callout">
+         <p>Pegasi B</p>
+         <p><img src="https://placehold.it/400x370&text=Pegasi B" alt="image of a planet called Pegasi B"></p>
+         <p class="lead">Copernican Revolution caused an uproar</p>
+         <p class="subheader">Find Earth-like planets life outside the Solar System</p>
+      </div>
+   </div>
+   <div class="column">
+      <div class="callout">
+         <p>Pegasi B</p>
+         <p><img src="https://placehold.it/400x370&text=Pegasi B" alt="image of a planet called Pegasi B"></p>
+         <p class="lead">Copernican Revolution caused an uproar</p>
+         <p class="subheader">Find Earth-like planets life outside the Solar System</p>
+      </div>
+   </div>
+   <div class="column">
+      <div class="callout">
+         <p>Pegasi B</p>
+         <p><img src="https://placehold.it/400x370&text=Pegasi B" alt="image of a planet called Pegasi B"></p>
+         <p class="lead">Copernican Revolution caused an uproar</p>
+         <p class="subheader">Find Earth-like planets life outside the Solar System</p>
+      </div>
+   </div>
+   <div class="column">
+      <div class="callout">
+         <p>Pegasi B</p>
+         <p><img src="https://placehold.it/400x370&text=Pegasi B" alt="image of a planet called Pegasi B"></p>
+         <p class="lead">Copernican Revolution caused an uproar</p>
+         <p class="subheader">Find Earth-like planets life outside the Solar System</p>
+      </div>
+   </div>
+   <div class="column">
+      <div class="callout">
+         <p>Pegasi B</p>
+         <p><img src="https://placehold.it/400x370&text=Pegasi B" alt="image of a planet called Pegasi B"></p>
+         <p class="lead">Copernican Revolution caused an uproar</p>
+         <p class="subheader">Find Earth-like planets life outside the Solar System</p>
+      </div>
+   </div>
+   <div class="column">
+      <div class="callout">
+         <p>Pegasi B</p>
+         <p><img src="https://placehold.it/400x370&text=Pegasi B" alt="image of a planet called Pegasi B"></p>
+         <p class="lead">Copernican Revolution caused an uproar</p>
+         <p class="subheader">Find Earth-like planets life outside the Solar System</p>
+      </div>
+   </div>
+</div>
+<div class="row column">
+   <a class="button hollow expanded">Load More</a>
+</div>
+{{#if error}}
+   <script type="text/javascript">
+   var error = "{{error}}"
+   toastr.error(error,"Error")
+   </script>
+{{else}}
+   <script>console.log('no errors')</script>
+{{/if}}
+   

@@ -7,7 +7,8 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session)
 const User = require('./models/user');
 const Task = require('./models/task');
-const reload = require('reload')
+const reload = require('reload');
+app.locals.info = 'req.session;'
 
 
 app.use(express.static('public'))
@@ -68,6 +69,7 @@ app.post('/login', function(req, res, next){
       } else {
         req.session.userId = user._id;
         req.session.isValidated = true;
+        app.locals.info = req.session;
         return res.redirect('/dashboard');
       }
     });
@@ -77,6 +79,7 @@ app.get('/logout', function (req, res, next) {
   if (req.session) {
     // delete session object
     req.session.isValidated = false;
+    app.locals.info = req.session;
     req.session.destroy(function (err) {
       if (err) {
         return next(err);
@@ -107,6 +110,7 @@ app.post('/register',function(req,res,next) {
       	console.log(user)
         req.session.userId = user.id;
         req.session.isValidated = true;
+        app.locals.info = req.session;
         return res.redirect('/dashboard');
       }
     });    
@@ -145,6 +149,14 @@ app.get('/tasks',function(req,res,next) {
     res.render('dashboard',{error:'You need to login to see that.'})
   }
 
+})
+
+
+app.get('/about',function(req,res,next) {
+  res.render('about',{blob:'TEXT'})
+})
+app.get('/docs',function(req,res,next) {
+  res.render('docs',{blob:'TEXT'})
 })
 
 reload(app);

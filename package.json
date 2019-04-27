@@ -14,17 +14,23 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^3.0.4",
+    "browser-sync": "^2.26.5",
     "connect-mongo": "^2.0.3",
     "express": "^4.16.4",
     "express-handlebars": "^3.0.2",
     "express-session": "^1.15.6",
+    "gulp-autoprefixer": "^6.1.0",
+    "gulp-exec": "^3.0.2",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
     "mongodb": "^3.1.13",
     "mongoose": "^5.4.17",
     "node-sass": "^4.11.0",
-    "reload": "^2.4.0"
+    "reload": "^2.4.0",
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
-    "gulp": "^4.0.0",
+    "gulp": "^3.9.1",
     "nodemon": "^1.18.10"
   }
 }
