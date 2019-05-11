@@ -21,7 +21,7 @@ function validateMyForm(){
     var passWordField = document.getElementById('password').value
     var form = document.querySelector('#register-form')
     if(passWordField != passWordConfirmField){ 
-        alert("Passwords do not match. Please try again.");
+        toastr.error("Passwords do not match. Please try again.","Error");
       } else {
           form.submit()
       }
@@ -43,4 +43,12 @@ function identifyRegisterForm() {
     switchToLogin.addEventListener('click',goToLoginForm)
 }
 
-
+function hideThenShow(show,hide){
+    console.table(show + hide)
+    if(typeof hide != 'undefined'){
+        $(hide).hide(500);
+        $(show).show(500);
+    }else {
+        $(show).show(500);
+    }
+}

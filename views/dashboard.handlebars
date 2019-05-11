@@ -1,21 +1,92 @@
 <div class="row">
-	{{#if error}}
-			<div class='error'>{{error}}</div>
-	{{else if success}}
-			<div id="success">Added!</div>
-	{{/if}}	
+	<div class="card-profile-stats">
+	<div class="card-profile-stats-intro">
+		<img class="card-profile-stats-intro-pic" src="{{user.headShotLink}}" alt="profile-image" />
+		<div class="card-profile-stats-intro-content">
+		<h3>{{user.username}}</h3>
+		<p>Joined {{user.joinDate}}</small></p>
+		</div> <!-- /.card-profile-stats-intro-content -->
+	</div> <!-- /.card-profile-stats-intro -->
 
-	<h1>Hey! You happened to be logged in!</h1>
+	<hr />
 
-	<p>You may be wondering what now....</p>
+	<div class="card-profile-stats-container">
+		<div class="card-profile-stats-statistic">
+		<span class="stat" id='total_tasks'>0</span>
+		<p>Total Tasks</p>
+		</div> <!-- /.card-profile-stats-statistic -->
+		<div class="card-profile-stats-statistic">
+		<span class="stat" id='todo_tasks'>0</span>
+		<p>Todo Tasks</p>
+		</div> <!-- /.card-profile-stats-statistic -->
+		<div class="card-profile-stats-statistic">
+		<span class="stat" id='completed_tasks'>0</span>
+		<p>Completed Tasks</p>
+		</div> <!-- /.card-profile-stats-statistic -->
+	</div> <!-- /.card-profile-stats-container -->
 
-	<form method="post" action="/newtask">
-		<input type="text" name="name" placeholder="Task Name">
-		<input type="date" name="dueDate" placeholder="Due Date">
-		<input type="text" name="description" placeholder="Description">
-		<input type="submit" value="New Task">
-	</form>
+	<div class="card-profile-stats-more">
+		<p class="card-profile-stats-more-link"><a href="#"><i class="fa fa-angle-down" aria-hidden="true"></i></a></p>
+		<div class="card-profile-stats-more-content">
+		<p>
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem libero fugit, pariatur maxime! Optio enim, deserunt quia molestiae fugiat delectus, dolore et esse nostrum, quod autem necessitatibus fugit soluta repellendus.
+		</p>
+		</div> <!-- /.card-profile-stats-more-content -->
+	</div> <!-- /.card-profile-stats-more -->
+	</div> <!-- /.card-profile-stats -->
 
-	<a href="/logout">logout here</a>
+	<div class="button" id="edit-profile">
+		Edit Profile
+	</div>
+	<div class="button" id="add-task">
+		Add Task
+	</div>
+	<div class="button" id="edit-task">
+		Edit Tasks
+	</div>
+	<div class="add-task-form" style="display:none;">
+	<fieldset>
+		<legend>Add a Task</legend>
+		<form id='new-task-form' action="/newtask" method="post">
+			<label>Task Name</label>
+			<input type="text" name="name" placeholder="Task Name" required>
+			<label>Due Date</label>
+			<input type="date" name="dueDate" placeholder="Due Date" required>
+			<label>Description</label>
+			<input type="text" name="description" placeholder="Description" required>
+			<input type="submit" class="button" value="New Task"> <a href="javascript:void(0);" id='hide-new-task'>Hide</a>
+		</form>
+	</fieldset>
+	</div>
+
 </div>
-	
+<script src="./js/dashboard.js"></script>
+{{#if error}}
+   <script type="text/javascript">
+   var error = "{{error}}"
+   toastr.error(error,"Error")
+   </script>
+{{else}}
+   <script>console.log('no errors')</script>
+{{/if}}
+
+{{#if success}}
+   <script type="text/javascript">
+   toastr.success("Added!")
+   </script>
+{{/if}}
+ {{#if info.isValidated}}
+ <script type="text/javascript">
+ 	var user_id = '{{info.userId}}';
+	fetch(document.location.protocol+'//'+document.location.host+'/tasks?id='+user_id)
+	.then(function(response) {
+		return response.json();
+	})
+	.then(function(myJson) {
+		document.querySelector('[id=total_tasks]').innerHTML = myJson.total_tasks;
+		document.querySelector('[id=todo_tasks]').innerHTML = myJson.todo_tasks;
+		document.querySelector('[id=completed_tasks]').innerHTML = myJson.completed_tasks;
+		console.log(myJson);
+	});
+ </script>
+	{{/if}}

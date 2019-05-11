@@ -17,6 +17,16 @@ var UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  joinDate: {
+    type: Date,
+    default: Date.now,
+    required: true
+  },
+  headShotLink: {
+    type: String,
+    default: "https://placehold.it/400x400/D1E3DD/32292F&text=Upload",
+    required: true
   }
 });
 

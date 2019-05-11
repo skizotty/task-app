@@ -51,14 +51,29 @@ app.use(session({
 //routes
 app.get('/dashboard',function(req,res) {
 	if(req.session.isValidated){
-		res.render('dashboard')
+    var finder = User.find({ _id: req.session.userId});
+    finder.exec(function (err, user) {
+      if(err){
+         res.render('dashboard',{error:err})
+      } else {
+         res.render('dashboard',{user:user[0]})
+      } 
+    });    
 	}else {
 		res.render('home',{error:'Must Login to see Dashboard.'})
 	}
 })
 
 app.get('/',function(req,res) {
-	res.render('home')
+  var user_id = req.session.userId;
+  var finder = Task.find({ owner: user_id});
+  finder.exec(function (err, docs) {
+    if(err){
+      res.render('home',{error:err})
+    }else {
+      res.render('home',{tasks:docs})
+    }
+  })
 })
 
 app.post('/login', function(req, res, next){
@@ -98,7 +113,8 @@ app.post('/register',function(req,res,next) {
     }
     User.create(userData, function (error, user) {
       if (error) {
-      	var err = error.errmsg
+        var err = error.errmsg
+        console.table(error)
         if(err.indexOf('email') !=-1 && err.indexOf('duplicate')!=-1){
           err = 'Email has been taken.'
         }else if (err.indexOf('username') !=-1 && err.indexOf('duplicate')!=-1){
@@ -125,6 +141,7 @@ app.post('/newtask',function(req,res,next) {
     createdDate: new Date().toLocaleString(),
   }
   Task.create(taskData,function(error,task) {
+    console.log(task)
     if(error) {
       var err = error.errmsg;
       console.log(err)
@@ -136,17 +153,30 @@ app.post('/newtask',function(req,res,next) {
 })
 
 app.get('/tasks',function(req,res,next) {
-  if(req.session.isValidated){
-    var finder = Task.find({ owner: req.session.userId});
+  console.log(req.query.id)
+  var user_id = req.query.id;
+  if(user_id!==''){
+    var finder = Task.find({ owner: user_id});
     finder.exec(function (err, docs) {
       if(err){
-         res.render('tasks',{error:err})
+         res.status(404).json({error:err})
       } else {
-         res.render('tasks',{docs:docs})
+         var task_info = {
+           'completed_tasks':docs.filter(function(item){
+                              return item.complete;
+                            }).length,
+            'todo_tasks':docs.filter(function(item){
+                              return !item.complete;
+                            }).length,
+            'total_tasks':docs.length,
+            'tasks':docs                       
+         }
+         res.status(200).json(task_info)
       } 
-    });    
-  } else {
-    res.render('dashboard',{error:'You need to login to see that.'})
+    })
+   }else {
+    var err = {'error_msg':'NO_ID_DEFINED'}
+    res.status(405).json({error:err})
   }
 
 })
