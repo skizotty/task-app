@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    {{#if title}}
+    		<title>{{title}}</title>
+    {{else}}
+    		<title>TaskApp</title>
+  	{{/if}}	
+    {{>header}}
+</head>
+<body>
+<div class="body-content">
+<section class="hero-img"></section>    
+<section>
+<div class="title-bar" data-responsive-toggle="realEstateMenu" data-hide-for="small">
+   <button class="menu-icon" type="button" data-toggle></button>
+   <div class="title-bar-title">Menu</div>
+</div>
+<div class="top-bar" id="realEstateMenu">
+   <div class="top-bar-left">
+      <ul class="menu" data-responsive-menu="accordion">
+         <li class="menu-text">Task App</li>
+         <li><a href="/">Home</a></li>
+         <li><a href="/about">About</a></li>
+         <li><a href="/docs">Documentation</a></li>
+         <li><a href="/dashboard">Dashboard</a></li>
+      </ul>
+   </div>
+   <div class="top-bar-right">
+      <ul class="menu">
+        <li><a href="/logout" class="button">Logout</a></li>
+      </ul>
+   </div>
+</div>
+<br>
+</section>
+    {{{body}}}
+
+</div> 
+</body>
+<footer>
+    {{>footer}}
+</footer>
+</html>

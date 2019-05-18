@@ -75,9 +75,8 @@
    toastr.success("Added!")
    </script>
 {{/if}}
- {{#if info.isValidated}}
  <script type="text/javascript">
- 	var user_id = '{{info.userId}}';
+ 	var user_id = '{{user._id}}';
 	fetch(document.location.protocol+'//'+document.location.host+'/tasks?id='+user_id)
 	.then(function(response) {
 		return response.json();
@@ -89,4 +88,3 @@
 		console.log(myJson);
 	});
  </script>
-	{{/if}}

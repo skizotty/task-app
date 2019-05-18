@@ -36,7 +36,11 @@
       <p class="subheader">{{this.description}}</p>
       <p>Due Date: {{this.dueDate}}</p>
       <p class="task-utils">
+         {{#if this.complete}}
+            <button class="complete success button" disabled data-task-id="{{this._id}}">This Task is Complete</button>
+         {{else}}
          <button class="complete success button" data-task-id="{{this._id}}">Complete</button>
+         {{/if}}
          <button type="button" class="delete alert button" data-task-id="{{this._id}}">Delete</button>
       </p>
     </div>

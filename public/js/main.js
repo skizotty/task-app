@@ -84,4 +84,48 @@ function hideThenShow(show,hide){
         console.log('added')
         button.addEventListener('click',startDeleteTask)
      })
+
+     function changeTaskButton(task_id) {
+         //todo change complete button to complete state
+     }
+     function completeTask(taskId) {
+        // url: http://localhost:5000/completetask/5ce026c38445a63d949ea987
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": document.location.protocol+'//'+document.location.host+'/completetask/'+taskId,
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Basic Og==",
+                "Accept": "*/*",
+                "Cache-Control": "no-cache",
+                "Postman-Token": "dcb8ee7a-2631-4f34-9dc5-2fadd11e1e97,0d917fce-3350-4c27-912b-e8555aea00c8",
+                "cache-control": "no-cache"
+            },
+            "processData": false,
+            "data": "{    \"lenderRef\": {        \"lenderId\": \"ZU10n75oioem2o9_8nu8j\"    },    \"fields\": [        \"closeDateSatisfaction\",        \"closingCostsSatisfaction\",        \"content\",        \"dateOfService\",        \"details\",        \"interestRateSatisfaction\",        \"loanPurpose\",        \"loanProgram\",        \"loanType\",        \"rating\",        \"serviceProvided\",        \"title\",        \"zipCode\",        \"companyReviewee\",        \"created\",        \"individualReviewee\",        \"response\",        \"reviewerName\",        \"verifiedReviewer\",        \"reviewId\",        \"updated\",        \"location\"    ],    \"pageSize\": 100,    \"page\": 1}"
+          }
+          
+          $.ajax(settings).done(function (response) {
+            console.log(response)
+            if(response.success){
+                changeTaskButton(taskId)
+            }else {
+                completeTask(taskId)
+            }
+         });
+          
+     }
+    function startCompleteTask(e){
+        e.preventDefault()
+        var task_id = this.getAttribute('data-task-id')
+        console.log(task_id)
+        completeTask(task_id)
+    }
+    var completeButtons = document.querySelectorAll('.complete')
+    completeButtons.forEach(function(button){
+        console.log('added')
+        button.addEventListener('click',startCompleteTask)
+    })
   });

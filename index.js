@@ -212,6 +212,24 @@ app.get('/tasks',function(req,res,next) {
 
 })
 
+app.post('/completetask/:id',function(req,res,next) {
+  var task_id = req.params.id
+  var query = { _id: task_id };
+  var info = {'success':false,err:''}
+  var status = 502;
+  Task.findOneAndUpdate(query, { $set: { complete: true } }, { new: true }, function(err, doc) {
+    if (err) {
+        console.log("error query");
+        info.err = err;
+      } else {
+        console.log(doc);
+        info.success = true;
+        status=200;
+    }
+    res.status(status).json(info)
+  });
+});
+
 
 app.get('/about',function(req,res,next) {
   var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
