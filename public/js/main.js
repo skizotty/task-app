@@ -122,6 +122,8 @@ function hideThenShow(show,hide){
         var task_id = this.getAttribute('data-task-id')
         console.log(task_id)
         completeTask(task_id)
+        this.disabled = true;
+        this.innerText = 'This Task is Complete'
     }
     var completeButtons = document.querySelectorAll('.complete')
     completeButtons.forEach(function(button){

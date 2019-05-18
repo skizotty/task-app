@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 //setting handlebars as view engine
-var handlebars  = require('express-handlebars').create({defaultLayout: 'main'})
+var handlebars  = require('express-handlebars').create({defaultLayout: 'loggedOut'})
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
@@ -50,8 +50,8 @@ app.use(session({
 //routes
 app.get('/dashboard',function(req,res) {
   var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+  console.log(layoutToRender)
 	if(req.session.isValidated){
-    var layoutToRender = req.session.layout;
     var finder = User.find({ _id: req.session.userId});
     finder.exec(function (err, user) {
       if(err){
@@ -80,6 +80,12 @@ app.get('/',function(req,res) {
       // docs.forEach(function(doc){
       //   doc = 
       // })
+      docs.forEach((doc)=>{
+        var format = "MMMM Do, YYYY";
+        var date = moment(doc.dueDate, format);
+        doc.formattedDate = date.format(format)
+      })
+
       res.render('home',{tasks:docs,layout:layoutToRender})
     }
   })
@@ -136,11 +142,10 @@ app.post('/register',function(req,res,next) {
         }
         res.render('home',{error:err,layout:layoutToRender})
       } else {
-      	console.log(req.session)
-      	console.log(user)
         req.session.userId = user.id;
         req.session.isValidated = true;
-        return res.redirect('/dashboard');
+        req.session.user = user;
+        return res.render('dashboard',{user:req.session.user,layout:layoutToRender});
       }
     });    
 })
@@ -229,6 +234,25 @@ app.post('/completetask/:id',function(req,res,next) {
     res.status(status).json(info)
   });
 });
+
+app.post('/updateuser',function(req,res,next) {
+  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+  var userEmail = req.body.email;
+  var username = req.body.username;
+  var userId = req.body.user_id;
+  var query = { _id: userId };
+  User.findOneAndUpdate(query, { $set: { username: username, email:userEmail } }, { new: true }, function(err, doc) {
+    if (err) {
+        console.log("error query: "+err);
+      } else {
+        console.log(doc);
+        req.session.user.email = req.body.email;
+        req.session.user.username = req.body.username;
+    }
+    console.log(req.session.user)
+    res.render('dashboard',{success:true,user:req.session.user,layout:layoutToRender})
+  });
+})
 
 
 app.get('/about',function(req,res,next) {

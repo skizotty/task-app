@@ -25,4 +25,19 @@ function addTaskFormReveal() {
 var addTaskButton = document.querySelector('[id=add-task]')
 addTaskButton.addEventListener('click',addTaskFormReveal)
 
+function showProfileEditForm() {
+  $(".edit-user-form").show(500);
+  createHideEditUserFunctions()
+}
+function createHideEditUserFunctions() {
+  function hideEditUserForm() {
+      $(".edit-user-form").hide(500);
+  }  
+  document.querySelector('#hide-update-user').addEventListener('click',hideEditUserForm)
+}
+
+
+var updateUser = document.querySelector('[id=edit-profile]')
+updateUser.addEventListener('click',showProfileEditForm)
+
 

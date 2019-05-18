@@ -34,7 +34,7 @@
     <div class="callout" id='{{this._id}}'>
       <p class="lead">{{this.name}}</p>
       <p class="subheader">{{this.description}}</p>
-      <p>Due Date: {{this.dueDate}}</p>
+      <p>Due Date: {{this.formattedDate}}</p>
       <p class="task-utils">
          {{#if this.complete}}
             <button class="complete success button" disabled data-task-id="{{this._id}}">This Task is Complete</button>
