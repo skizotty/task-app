@@ -52,3 +52,36 @@ function hideThenShow(show,hide){
         $(show).show(500);
     }
 }
+
+
+
+ $(document).ready(function(){
+    function removeTaskFromView(task_id){
+        $('#'+task_id).hide(500);
+    }
+    function deleteTask(task_id){
+        fetch(document.location.protocol+'//'+document.location.host+'/deletetask/'+task_id)
+        .then(function(response) {
+           return response.json();
+        })
+        .then(function(myJson) {
+           console.log(myJson);
+           if(myJson.success){
+               removeTaskFromView(task_id)
+           }else {
+               deleteTask(task_id)
+           }
+        });
+     } 
+     function startDeleteTask(e){
+        e.preventDefault()
+        var task_id = this.getAttribute('data-task-id')
+        console.log(task_id)
+        deleteTask(task_id)
+     }
+     var buttons = document.querySelectorAll('.delete')
+     buttons.forEach(function(button){
+        console.log('added')
+        button.addEventListener('click',startDeleteTask)
+     })
+  });

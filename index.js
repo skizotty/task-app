@@ -8,8 +8,7 @@ const MongoStore = require('connect-mongo')(session)
 const User = require('./models/user');
 const Task = require('./models/task');
 const reload = require('reload');
-app.locals.info = 'req.session;'
-
+const moment = require('moment');
 
 app.use(express.static('public'))
 
@@ -50,51 +49,65 @@ app.use(session({
 
 //routes
 app.get('/dashboard',function(req,res) {
+  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
 	if(req.session.isValidated){
+    var layoutToRender = req.session.layout;
     var finder = User.find({ _id: req.session.userId});
     finder.exec(function (err, user) {
       if(err){
-         res.render('dashboard',{error:err})
+         res.render('dashboard',{error:err,layout:layoutToRender})
       } else {
-         res.render('dashboard',{user:user[0]})
+        var format = "MMMM Do, YYYY";
+        var date = moment(user[0].joinDate, format);
+        user[0].formattedJoinDate = date.format(format)
+        console.log(user[0].formattedJoinDate)
+        res.render('dashboard',{user:user[0],layout:layoutToRender})
       } 
     });    
 	}else {
-		res.render('home',{error:'Must Login to see Dashboard.'})
+		res.render('home',{error:'Must Login to see Dashboard.',layout:layoutToRender})
 	}
 })
 
 app.get('/',function(req,res) {
+  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
   var user_id = req.session.userId;
   var finder = Task.find({ owner: user_id});
   finder.exec(function (err, docs) {
     if(err){
-      res.render('home',{error:err})
+      res.render('home',{error:err,layout:layoutToRender})
     }else {
-      res.render('home',{tasks:docs})
+      // docs.forEach(function(doc){
+      //   doc = 
+      // })
+      res.render('home',{tasks:docs,layout:layoutToRender})
     }
   })
 })
 
 app.post('/login', function(req, res, next){
+    var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+
     User.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
       if (error || !user) {        
         var err = 'Wrong email or password.';
-        res.render('home',{error:err})
+        res.render('home',{error:err,layout:layoutToRender})
       } else {
+        req.session.layout = 'loggedIn';
         req.session.userId = user._id;
+        req.session.user = user;
         req.session.isValidated = true;
-        app.locals.info = req.session;
         return res.redirect('/dashboard');
       }
     });
 })
 
 app.get('/logout', function (req, res, next) {
+  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
   if (req.session) {
     // delete session object
     req.session.isValidated = false;
-    app.locals.info = req.session;
+    req.session.layout = 'loggedOut';
     req.session.destroy(function (err) {
       if (err) {
         return next(err);
@@ -106,6 +119,7 @@ app.get('/logout', function (req, res, next) {
 });
 
 app.post('/register',function(req,res,next) {
+    var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
     var userData = {
       email: req.body.email,
       username: req.body.username,
@@ -120,19 +134,37 @@ app.post('/register',function(req,res,next) {
         }else if (err.indexOf('username') !=-1 && err.indexOf('duplicate')!=-1){
           err = 'Username has been taken.'
         }
-        res.render('home',{error:err})
+        res.render('home',{error:err,layout:layoutToRender})
       } else {
       	console.log(req.session)
       	console.log(user)
         req.session.userId = user.id;
         req.session.isValidated = true;
-        app.locals.info = req.session;
         return res.redirect('/dashboard');
       }
     });    
 })
 
+app.get('/deletetask/:id',function(req,res,next){
+  var task_id = req.params.id
+  var query = { _id: task_id };
+  var info = {'success':false,err:''}
+  var status = 502;
+  Task.deleteOne(query, function (err, result) {
+    if (err) {
+        console.log("error query");
+        info.err = err;
+      } else {
+        console.log(result);
+        info.success = true;
+        status=200;
+    }
+    res.status(status).json(info)
+});
+})
+
 app.post('/newtask',function(req,res,next) {
+  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
   var taskData = {
     name: req.body.name,
     owner:req.session.userId,
@@ -145,15 +177,14 @@ app.post('/newtask',function(req,res,next) {
     if(error) {
       var err = error.errmsg;
       console.log(err)
-      res.render('dashboard',{error:err})
+      res.render('dashboard',{error:err,layout:layoutToRender})
     } else {
-      res.render('dashboard',{success:true})
+      res.render('dashboard',{success:true,user:req.session.user,layout:layoutToRender})
     }
   })
 })
 
 app.get('/tasks',function(req,res,next) {
-  console.log(req.query.id)
   var user_id = req.query.id;
   if(user_id!==''){
     var finder = Task.find({ owner: user_id});
@@ -183,10 +214,12 @@ app.get('/tasks',function(req,res,next) {
 
 
 app.get('/about',function(req,res,next) {
-  res.render('about',{blob:'TEXT'})
+  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+  res.render('about',{blob:'TEXT',layout:layoutToRender})
 })
 app.get('/docs',function(req,res,next) {
-  res.render('docs',{blob:'TEXT'})
+  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+  res.render('docs',{blob:'TEXT',layout:layoutToRender})
 })
 
 reload(app);
