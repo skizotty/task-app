@@ -11,9 +11,33 @@
   --error-color: red;
 }
 
-.add-task-form,.edit-user-form {
+.add-task-form,.edit-user-form,.edit-task-table {
   max-width:75%;
   margin:auto;
+}
+
+table {
+  width: 100%;
+}
+
+footer {
+  background: var(--main-bg-color);
+  height:100px;
+  text-align: center;
+  bottom: 0;
+  width: 100%;
+}
+
+footer p {
+  padding-top:20px;
+}
+
+#new-task-form label {
+  display:inline;
+}
+
+.no-task-text {
+  padding:.9375rem;
 }
 
 .callout {
@@ -34,15 +58,6 @@ fieldset legend {
   padding: 0 0.16667rem;
 }
 
-footer {
-  background: var(--main-bg-color);
-  height:150px;
-  text-align: center;
-}
-
-footer p {
-  padding-top:20px;
-}
 
 .hero-img {
   background-image: url("../img/bg-img.jpg");

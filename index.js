@@ -61,7 +61,29 @@ app.get('/dashboard',function(req,res) {
         var date = moment(user[0].joinDate, format);
         user[0].formattedJoinDate = date.format(format)
         console.log(user[0].formattedJoinDate)
-        res.render('dashboard',{user:user[0],layout:layoutToRender})
+        var user_id = req.session.userId;
+        var finder = Task.find({ owner: user_id});
+        finder.exec(function (err, docs) {
+          if(err){
+            res.render('dashboard',{error:err,layout:layoutToRender})
+          }else {
+            // docs.forEach(function(doc){
+            //   doc = 
+            // })
+            docs.forEach((doc)=>{
+              var format = "MMMM Do, YYYY";
+              var date = moment(doc.dueDate, format);
+              doc.formattedDate = date.format(format)
+            })
+            docs.forEach((doc)=>{
+              var format = "YYYY-MM-DD";
+              var date = moment(doc.dueDate, format);
+              doc.datepickerDate = date.format(format)
+            })
+      
+            res.render('dashboard',{tasks:docs,layout:layoutToRender,user:req.session.user,isValidated:req.session.isValidated,tasks:docs})
+          }
+        })
       } 
     });    
 	}else {
@@ -86,7 +108,7 @@ app.get('/',function(req,res) {
         doc.formattedDate = date.format(format)
       })
 
-      res.render('home',{tasks:docs,layout:layoutToRender})
+      res.render('home',{tasks:docs,layout:layoutToRender,user:req.session.user,isValidated:req.session.isValidated})
     }
   })
 })
@@ -106,6 +128,39 @@ app.post('/login', function(req, res, next){
         return res.redirect('/dashboard');
       }
     });
+})
+
+app.post('/updatetask',function(req,res,next){
+  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+  console.log(req.body)
+  var task_id = req.body.task_id;
+  var query = { _id: task_id };
+  Task.findOneAndUpdate(query, { $set: { 
+      complete: req.body.complete,
+      name:req.body.name,
+      description:req.body.description,
+      dueDate:req.body.dueDate
+    }}, { new: true }, function(err, doc) {
+    if (err) {
+        console.log(err);
+      } else {
+        console.log(doc);
+    }
+    var finder = Task.find({ owner: req.session.userId});
+    finder.exec(function (err, docs) {
+      docs.forEach((doc)=>{
+        var format = "MMMM Do, YYYY";
+        var date = moment(doc.dueDate, format);
+        doc.formattedDate = date.format(format)
+      })
+      docs.forEach((doc)=>{
+        var format = "YYYY-MM-DD";
+        var date = moment(doc.dueDate, format);
+        doc.datepickerDate = date.format(format)
+      })
+      res.render('dashboard',{user:req.session.user,layout:layoutToRender,error:err,tasks:docs});  
+    })
+  });
 })
 
 app.get('/logout', function (req, res, next) {
@@ -184,7 +239,19 @@ app.post('/newtask',function(req,res,next) {
       console.log(err)
       res.render('dashboard',{error:err,layout:layoutToRender})
     } else {
-      res.render('dashboard',{success:true,user:req.session.user,layout:layoutToRender})
+      var finder = Task.find({ owner: req.session.userId});
+    finder.exec(function (err, docs) {
+      docs.forEach((doc)=>{
+        var format = "MMMM Do, YYYY";
+        var date = moment(doc.dueDate, format);
+        doc.formattedDate = date.format(format)
+      })
+      docs.forEach((doc)=>{
+        var format = "YYYY-MM-DD";
+        var date = moment(doc.dueDate, format);
+        doc.datepickerDate = date.format(format)
+      })
+      res.render('dashboard',{tasks:docs,success:true,user:req.session.user,layout:layoutToRender})})
     }
   })
 })

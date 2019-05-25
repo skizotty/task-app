@@ -71,6 +71,64 @@
 		</form>
 	</fieldset>
 	</div>
+	<div class="edit-task-table" style="display: none;">
+		<legend>Edit Tasks</legend>
+		<table>
+			<thead>
+				<tr>
+					<th>Task</th>
+					<th>Description</th>
+					<th>Status</th>
+					<th>Due Date</th>
+					<th>Edit</th>
+				</tr>
+			</thead>
+			{{#each tasks}}
+			<tr>
+				<td>{{this.name}}</td>
+				<td>{{this.description}}</td>
+				<td>{{#if this.complete}}Completed{{else}}ToDo{{/if}}</td>
+				<td>{{this.formattedDate}}</td>
+				
+				<td class="button" data-open="{{this._id}}">Edit</td>
+			</tr>
+			{{else}}
+			<tr>
+				<td>
+					No tasks yet! 
+				</td>
+			</tr>
+			{{/each}}
+		</table> 
+		<a href="javascript:void(0);" id='hide-edit-tasks'>Hide</a>
+	</div>
+	</div>
+{{#each tasks}}
+	<div class="reveal" id="{{this._id}}" data-reveal>
+		<h3>Edit Task</h3>
+		<button class="close-button" data-close aria-label="Close modal" type="button">
+		<span aria-hidden="true">&times;</span>
+	</button>
+		<form id='new-task-form' action="/updatetask" method="post">
+			<input type="hidden" value="{{this._id}}" name="task_id">
+			<label>Name</label>
+			<input type="text" name="name" placeholder="Name" value="{{this.name}}">
+			<label>Description</label>
+			<input type="text" name="description" placeholder="Description" value="{{this.description}}">
+			<label>Due Date</label>
+			<input type="date" name="dueDate" placeholder="Due Date" value="{{this.datepickerDate}}">
+			{{#if this.complete}}
+			<label for="radio1"><input value="true" type="radio" name="complete" id="radio1" checked="checked"> Complete</label>
+			<label for="radio2"><input value="false" type="radio" name="complete" id="radio2"> Todo</label>
+			{{else}}
+			<label for="radio1"><input value="true" type="radio" name="complete" id="radio1" > Complete</label>
+			<label for="radio2"><input value="false" type="radio" name="complete" id="radio2" checked="checked"> To do</label>
+			{{/if}}
+			<br><br>
+			<input type="submit" class="button" value="Update"> <a href="javascript:void(0);" id='hide-update-user'>Hide</a>
+		</form>
+	</div>
+{{/each}}
 
 </div>
 <script src="./js/dashboard.js"></script>

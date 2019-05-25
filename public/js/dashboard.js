@@ -41,3 +41,16 @@ var updateUser = document.querySelector('[id=edit-profile]')
 updateUser.addEventListener('click',showProfileEditForm)
 
 
+function showEditTasksTable() {
+  $(".edit-task-table").show(500);
+  createHideEditTaskFunction()
+}
+function createHideEditTaskFunction() {
+  function hideEditTaskForm() {
+      $(".edit-task-table").hide(500);
+  }  
+  document.querySelector('#hide-edit-tasks').addEventListener('click',hideEditTaskForm)
+}
+
+var editTasks = document.querySelector('#edit-task')
+editTasks.addEventListener('click',showEditTasksTable)
