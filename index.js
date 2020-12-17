@@ -1,33 +1,38 @@
-
 const express = require('express');
 const app = express();
-const bodyParser = require("body-parser");
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo')(session)
+const MongoStore = require('connect-mongo')(session);
 const User = require('./models/user');
 const Task = require('./models/task');
 const reload = require('reload');
 const moment = require('moment');
 
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 //body parser time!
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 app.use(bodyParser.json());
 
 //setting handlebars as view engine
-var handlebars  = require('express-handlebars').create({defaultLayout: 'loggedOut'})
+var handlebars = require('express-handlebars').create({
+  defaultLayout: 'loggedOut',
+});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-
 
 //connect to MongoDB
 //mongoose.connect('mongodb://localhost:27017/webapp');
 //production url: mongodb://admin:hzJi745JF9yEV9e@ds125486.mlab.com:25486/heroku_sn1g0n8w
-mongoose.connect('mongodb://admin:hzJi745JF9yEV9e@ds125486.mlab.com:25486/heroku_sn1g0n8w');
+//BlT8KwxpZld7GMIl
+mongoose.connect(
+  'mongodb+srv://admin:BlT8KwxpZld7GMIl@task-app.wwkpo.mongodb.net/<dbname>?retryWrites=true&w=majority'
+);
 var db = mongoose.connection;
 
 //handle mongo error
@@ -36,90 +41,107 @@ db.once('open', function () {
   // we're connected!
 });
 
-
-app.use(session({
-  secret: 'work hard',
-  resave: true,
-  saveUninitialized: false,
-  store: new MongoStore({
-    mongooseConnection: db
+app.use(
+  session({
+    secret: 'work hard',
+    resave: true,
+    saveUninitialized: false,
+    store: new MongoStore({
+      mongooseConnection: db,
+    }),
   })
-}));
-
+);
 
 //routes
-app.get('/dashboard',function(req,res) {
-  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
-  console.log(layoutToRender)
-	if(req.session.isValidated){
-    var finder = User.find({ _id: req.session.userId});
+app.get('/dashboard', function (req, res) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
+  console.log(layoutToRender);
+  if (req.session.isValidated) {
+    var finder = User.find({ _id: req.session.userId });
     finder.exec(function (err, user) {
-      if(err){
-         res.render('dashboard',{error:err,layout:layoutToRender})
+      if (err) {
+        res.render('dashboard', { error: err, layout: layoutToRender });
       } else {
-        var format = "MMMM Do, YYYY";
+        var format = 'MMMM Do, YYYY';
         var date = moment(user[0].joinDate, format);
-        user[0].formattedJoinDate = date.format(format)
-        console.log(user[0].formattedJoinDate)
+        user[0].formattedJoinDate = date.format(format);
+        console.log(user[0].formattedJoinDate);
         var user_id = req.session.userId;
-        var finder = Task.find({ owner: user_id});
+        var finder = Task.find({ owner: user_id });
         finder.exec(function (err, docs) {
-          if(err){
-            res.render('dashboard',{error:err,layout:layoutToRender})
-          }else {
+          if (err) {
+            res.render('dashboard', { error: err, layout: layoutToRender });
+          } else {
             // docs.forEach(function(doc){
-            //   doc = 
+            //   doc =
             // })
-            docs.forEach((doc)=>{
-              var format = "MMMM Do, YYYY";
+            docs.forEach((doc) => {
+              var format = 'MMMM Do, YYYY';
               var date = moment(doc.dueDate, format);
-              doc.formattedDate = date.format(format)
-            })
-            docs.forEach((doc)=>{
-              var format = "YYYY-MM-DD";
+              doc.formattedDate = date.format(format);
+            });
+            docs.forEach((doc) => {
+              var format = 'YYYY-MM-DD';
               var date = moment(doc.dueDate, format);
-              doc.datepickerDate = date.format(format)
-            })
-      
-            res.render('dashboard',{tasks:docs,layout:layoutToRender,user:req.session.user,isValidated:req.session.isValidated,tasks:docs})
+              doc.datepickerDate = date.format(format);
+            });
+
+            res.render('dashboard', {
+              tasks: docs,
+              layout: layoutToRender,
+              user: req.session.user,
+              isValidated: req.session.isValidated,
+              tasks: docs,
+            });
           }
-        })
-      } 
-    });    
-	}else {
-		res.render('home',{error:'Must Login to see Dashboard.',layout:layoutToRender})
-	}
-})
+        });
+      }
+    });
+  } else {
+    res.render('home', {
+      error: 'Must Login to see Dashboard.',
+      layout: layoutToRender,
+    });
+  }
+});
 
-app.get('/',function(req,res) {
-  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+app.get('/', function (req, res) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
   var user_id = req.session.userId;
-  var finder = Task.find({ owner: user_id});
+  var finder = Task.find({ owner: user_id });
   finder.exec(function (err, docs) {
-    if(err){
-      res.render('home',{error:err,layout:layoutToRender})
-    }else {
+    if (err) {
+      res.render('home', { error: err, layout: layoutToRender });
+    } else {
       // docs.forEach(function(doc){
-      //   doc = 
+      //   doc =
       // })
-      docs.forEach((doc)=>{
-        var format = "MMMM Do, YYYY";
+      docs.forEach((doc) => {
+        var format = 'MMMM Do, YYYY';
         var date = moment(doc.dueDate, format);
-        doc.formattedDate = date.format(format)
-      })
+        doc.formattedDate = date.format(format);
+      });
 
-      res.render('home',{tasks:docs,layout:layoutToRender,user:req.session.user,isValidated:req.session.isValidated})
+      res.render('home', {
+        tasks: docs,
+        layout: layoutToRender,
+        user: req.session.user,
+        isValidated: req.session.isValidated,
+      });
     }
-  })
-})
+  });
+});
 
-app.post('/login', function(req, res, next){
-    var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+app.post('/login', function (req, res, next) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
 
-    User.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
-      if (error || !user) {        
+  User.authenticate(
+    req.body.logemail,
+    req.body.logpassword,
+    function (error, user) {
+      if (error || !user) {
         var err = 'Wrong email or password.';
-        res.render('home',{error:err,layout:layoutToRender})
+        res.render('home', { error: err, layout: layoutToRender });
       } else {
         req.session.layout = 'loggedIn';
         req.session.userId = user._id;
@@ -127,44 +149,57 @@ app.post('/login', function(req, res, next){
         req.session.isValidated = true;
         return res.redirect('/dashboard');
       }
-    });
-})
+    }
+  );
+});
 
-app.post('/updatetask',function(req,res,next){
-  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
-  console.log(req.body)
+app.post('/updatetask', function (req, res, next) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
+  console.log(req.body);
   var task_id = req.body.task_id;
   var query = { _id: task_id };
-  Task.findOneAndUpdate(query, { $set: { 
-      complete: req.body.complete,
-      name:req.body.name,
-      description:req.body.description,
-      dueDate:req.body.dueDate
-    }}, { new: true }, function(err, doc) {
-    if (err) {
+  Task.findOneAndUpdate(
+    query,
+    {
+      $set: {
+        complete: req.body.complete,
+        name: req.body.name,
+        description: req.body.description,
+        dueDate: req.body.dueDate,
+      },
+    },
+    { new: true },
+    function (err, doc) {
+      if (err) {
         console.log(err);
       } else {
         console.log(doc);
+      }
+      var finder = Task.find({ owner: req.session.userId });
+      finder.exec(function (err, docs) {
+        docs.forEach((doc) => {
+          var format = 'MMMM Do, YYYY';
+          var date = moment(doc.dueDate, format);
+          doc.formattedDate = date.format(format);
+        });
+        docs.forEach((doc) => {
+          var format = 'YYYY-MM-DD';
+          var date = moment(doc.dueDate, format);
+          doc.datepickerDate = date.format(format);
+        });
+        res.render('dashboard', {
+          user: req.session.user,
+          layout: layoutToRender,
+          error: err,
+          tasks: docs,
+        });
+      });
     }
-    var finder = Task.find({ owner: req.session.userId});
-    finder.exec(function (err, docs) {
-      docs.forEach((doc)=>{
-        var format = "MMMM Do, YYYY";
-        var date = moment(doc.dueDate, format);
-        doc.formattedDate = date.format(format)
-      })
-      docs.forEach((doc)=>{
-        var format = "YYYY-MM-DD";
-        var date = moment(doc.dueDate, format);
-        doc.datepickerDate = date.format(format)
-      })
-      res.render('dashboard',{user:req.session.user,layout:layoutToRender,error:err,tasks:docs});  
-    })
-  });
-})
+  );
+});
 
 app.get('/logout', function (req, res, next) {
-  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
   if (req.session) {
     // delete session object
     req.session.isValidated = false;
@@ -179,157 +214,182 @@ app.get('/logout', function (req, res, next) {
   }
 });
 
-app.post('/register',function(req,res,next) {
-    var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
-    var userData = {
-      email: req.body.email,
-      username: req.body.username,
-      password: req.body.password,
-    }
-    User.create(userData, function (error, user) {
-      if (error) {
-        var err = error.errmsg
-        console.table(error)
-        if(err.indexOf('email') !=-1 && err.indexOf('duplicate')!=-1){
-          err = 'Email has been taken.'
-        }else if (err.indexOf('username') !=-1 && err.indexOf('duplicate')!=-1){
-          err = 'Username has been taken.'
-        }
-        res.render('home',{error:err,layout:layoutToRender})
-      } else {
-        req.session.userId = user.id;
-        req.session.isValidated = true;
-        req.session.user = user;
-        return res.render('dashboard',{user:req.session.user,layout:layoutToRender});
+app.post('/register', function (req, res, next) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
+  var userData = {
+    email: req.body.email,
+    username: req.body.username,
+    password: req.body.password,
+  };
+  User.create(userData, function (error, user) {
+    if (error) {
+      var err = error.errmsg;
+      console.table(error);
+      if (err.indexOf('email') != -1 && err.indexOf('duplicate') != -1) {
+        err = 'Email has been taken.';
+      } else if (
+        err.indexOf('username') != -1 &&
+        err.indexOf('duplicate') != -1
+      ) {
+        err = 'Username has been taken.';
       }
-    });    
-})
+      res.render('home', { error: err, layout: layoutToRender });
+    } else {
+      req.session.userId = user.id;
+      req.session.isValidated = true;
+      req.session.user = user;
+      return res.render('dashboard', {
+        user: req.session.user,
+        layout: layoutToRender,
+      });
+    }
+  });
+});
 
-app.get('/deletetask/:id',function(req,res,next){
-  var task_id = req.params.id
+app.get('/deletetask/:id', function (req, res, next) {
+  var task_id = req.params.id;
   var query = { _id: task_id };
-  var info = {'success':false,err:''}
+  var info = { success: false, err: '' };
   var status = 502;
   Task.deleteOne(query, function (err, result) {
     if (err) {
-        console.log("error query");
-        info.err = err;
-      } else {
-        console.log(result);
-        info.success = true;
-        status=200;
+      console.log('error query');
+      info.err = err;
+    } else {
+      console.log(result);
+      info.success = true;
+      status = 200;
     }
-    res.status(status).json(info)
+    res.status(status).json(info);
+  });
 });
-})
 
-app.post('/newtask',function(req,res,next) {
-  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+app.post('/newtask', function (req, res, next) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
   var taskData = {
     name: req.body.name,
-    owner:req.session.userId,
-    dueDate: (typeof req.body.dueDate == 'undefined' ? '' : req.body.dueDate),
-    description:(typeof req.body.description == 'undefined' ? '' : req.body.description)  ,
+    owner: req.session.userId,
+    dueDate: typeof req.body.dueDate == 'undefined' ? '' : req.body.dueDate,
+    description:
+      typeof req.body.description == 'undefined' ? '' : req.body.description,
     createdDate: new Date().toLocaleString(),
-  }
-  Task.create(taskData,function(error,task) {
-    console.log(task)
-    if(error) {
+  };
+  Task.create(taskData, function (error, task) {
+    console.log(task);
+    if (error) {
       var err = error.errmsg;
-      console.log(err)
-      res.render('dashboard',{error:err,layout:layoutToRender})
+      console.log(err);
+      res.render('dashboard', { error: err, layout: layoutToRender });
     } else {
-      var finder = Task.find({ owner: req.session.userId});
-    finder.exec(function (err, docs) {
-      docs.forEach((doc)=>{
-        var format = "MMMM Do, YYYY";
-        var date = moment(doc.dueDate, format);
-        doc.formattedDate = date.format(format)
-      })
-      docs.forEach((doc)=>{
-        var format = "YYYY-MM-DD";
-        var date = moment(doc.dueDate, format);
-        doc.datepickerDate = date.format(format)
-      })
-      res.render('dashboard',{tasks:docs,success:true,user:req.session.user,layout:layoutToRender})})
+      var finder = Task.find({ owner: req.session.userId });
+      finder.exec(function (err, docs) {
+        docs.forEach((doc) => {
+          var format = 'MMMM Do, YYYY';
+          var date = moment(doc.dueDate, format);
+          doc.formattedDate = date.format(format);
+        });
+        docs.forEach((doc) => {
+          var format = 'YYYY-MM-DD';
+          var date = moment(doc.dueDate, format);
+          doc.datepickerDate = date.format(format);
+        });
+        res.render('dashboard', {
+          tasks: docs,
+          success: true,
+          user: req.session.user,
+          layout: layoutToRender,
+        });
+      });
     }
-  })
-})
+  });
+});
 
-app.get('/tasks',function(req,res,next) {
+app.get('/tasks', function (req, res, next) {
   var user_id = req.query.id;
-  if(user_id!==''){
-    var finder = Task.find({ owner: user_id});
+  if (user_id !== '') {
+    var finder = Task.find({ owner: user_id });
     finder.exec(function (err, docs) {
-      if(err){
-         res.status(404).json({error:err})
+      if (err) {
+        res.status(404).json({ error: err });
       } else {
-         var task_info = {
-           'completed_tasks':docs.filter(function(item){
-                              return item.complete;
-                            }).length,
-            'todo_tasks':docs.filter(function(item){
-                              return !item.complete;
-                            }).length,
-            'total_tasks':docs.length,
-            'tasks':docs                       
-         }
-         res.status(200).json(task_info)
-      } 
-    })
-   }else {
-    var err = {'error_msg':'NO_ID_DEFINED'}
-    res.status(405).json({error:err})
+        var task_info = {
+          completed_tasks: docs.filter(function (item) {
+            return item.complete;
+          }).length,
+          todo_tasks: docs.filter(function (item) {
+            return !item.complete;
+          }).length,
+          total_tasks: docs.length,
+          tasks: docs,
+        };
+        res.status(200).json(task_info);
+      }
+    });
+  } else {
+    var err = { error_msg: 'NO_ID_DEFINED' };
+    res.status(405).json({ error: err });
   }
+});
 
-})
-
-app.post('/completetask/:id',function(req,res,next) {
-  var task_id = req.params.id
+app.post('/completetask/:id', function (req, res, next) {
+  var task_id = req.params.id;
   var query = { _id: task_id };
-  var info = {'success':false,err:''}
+  var info = { success: false, err: '' };
   var status = 502;
-  Task.findOneAndUpdate(query, { $set: { complete: true } }, { new: true }, function(err, doc) {
-    if (err) {
-        console.log("error query");
+  Task.findOneAndUpdate(
+    query,
+    { $set: { complete: true } },
+    { new: true },
+    function (err, doc) {
+      if (err) {
+        console.log('error query');
         info.err = err;
       } else {
         console.log(doc);
         info.success = true;
-        status=200;
+        status = 200;
+      }
+      res.status(status).json(info);
     }
-    res.status(status).json(info)
-  });
+  );
 });
 
-app.post('/updateuser',function(req,res,next) {
-  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
+app.post('/updateuser', function (req, res, next) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
   var userEmail = req.body.email;
   var username = req.body.username;
   var userId = req.body.user_id;
   var query = { _id: userId };
-  User.findOneAndUpdate(query, { $set: { username: username, email:userEmail } }, { new: true }, function(err, doc) {
-    if (err) {
-        console.log("error query: "+err);
+  User.findOneAndUpdate(
+    query,
+    { $set: { username: username, email: userEmail } },
+    { new: true },
+    function (err, doc) {
+      if (err) {
+        console.log('error query: ' + err);
       } else {
         console.log(doc);
         req.session.user.email = req.body.email;
         req.session.user.username = req.body.username;
+      }
+      console.log(req.session.user);
+      res.render('dashboard', {
+        success: true,
+        user: req.session.user,
+        layout: layoutToRender,
+      });
     }
-    console.log(req.session.user)
-    res.render('dashboard',{success:true,user:req.session.user,layout:layoutToRender})
-  });
-})
+  );
+});
 
-
-app.get('/about',function(req,res,next) {
-  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
-  res.render('about',{blob:'TEXT',layout:layoutToRender})
-})
-app.get('/docs',function(req,res,next) {
-  var layoutToRender = (!req.session.isValidated)?'loggedOut':'loggedIn';
-  res.render('docs',{blob:'TEXT',layout:layoutToRender})
-})
+app.get('/about', function (req, res, next) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
+  res.render('about', { blob: 'TEXT', layout: layoutToRender });
+});
+app.get('/docs', function (req, res, next) {
+  var layoutToRender = !req.session.isValidated ? 'loggedOut' : 'loggedIn';
+  res.render('docs', { blob: 'TEXT', layout: layoutToRender });
+});
 
 reload(app);
 
