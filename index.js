@@ -28,11 +28,8 @@ app.set('view engine', 'handlebars');
 
 //connect to MongoDB
 //mongoose.connect('mongodb://localhost:27017/webapp');
-//production url: mongodb://admin:hzJi745JF9yEV9e@ds125486.mlab.com:25486/heroku_sn1g0n8w
-//BlT8KwxpZld7GMIl
-mongoose.connect(
-  'mongodb+srv://admin:BlT8KwxpZld7GMIl@task-app.wwkpo.mongodb.net/<dbname>?retryWrites=true&w=majority'
-);
+// this db uri is inside of heroku
+mongoose.connect(process.env.dbURI);
 var db = mongoose.connection;
 
 //handle mongo error
